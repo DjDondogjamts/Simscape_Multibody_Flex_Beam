@@ -1,0 +1,165 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Lumped Parameter Beam with Mode Calculation</title><meta name="generator" content="MATLAB 9.2"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-02-23"><meta name="DC.source" content="Flexible_Beam_LP_Modes.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Lumped Parameter Beam with Mode Calculation</h1><!--introduction--><p>This example shows a cantilever beam modeled using the lumped parameter method.  In a simple test, transient simulation can be used to determine the static deflection of the beam.</p><p>The model is configured so that linearization techniques can be used to identify the natural frequencies of the beams at various modes.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Model</a></li><li><a href="#2">Flex_Body Subsystem (Lumped Parameter Method)</a></li><li><a href="#3">Static Deflection</a></li><li><a href="#4">Mode Calculation</a></li></ul></div><h2 id="1">Model</h2><img vspace="5" hspace="5" src="Flexible_Beam_LP_Modes_01.png" style="width:478px;height:294px;" alt=""> <h2 id="2">Flex_Body Subsystem (Lumped Parameter Method)</h2><p>The chain of flexible elements is automatically constructed using MATLAB commands.  The subsystem mask permits the user to specify the number of elements, material properties, and beam cross section.  The degrees of freedom for the flexible body can also be selected in the mask.  The body "Flex Joint" within the element can be replaced by another Simscape Multibody block that has the desired degrees of freedom.</p><img vspace="5" hspace="5" src="Flexible_Beam_LP_Modes_02.png" style="width:2614px;height:92px;" alt=""> <img vspace="5" hspace="5" src="Flexible_Beam_LP_Modes_03.png" style="width:505px;height:152px;" alt=""> <h2 id="3">Static Deflection</h2><p>In this model, the default values are for a 30m long hollow square beam constructed of steel (modulus of elasticity = 200 GPa, density = 7850 kg/m^3). The sides of the beam are 0.6096m long, and the wall thickness is 0.019m.</p><p>Euler-Bernoulli beam theory predicts the static deflection for a cantilever beam with one fixed end and one free end with equation (1)</p><p><img src="Flexible_Beam_LP_Modes_eq01741245925440976124.png" alt="$\delta={qL^4\over 8EI}\quad\quad\quad(1)$" style="width:110px;height:21px;"></p><p>Where</p><p><img src="Flexible_Beam_LP_Modes_eq15226540192103580117.png" alt="$q$" style="width:7px;height:10px;"> = Uniform load on the beam (force/unit length)</p><p><img src="Flexible_Beam_LP_Modes_eq14915154157749762976.png" alt="$q  = rho*area / length$" style="width:142px;height:15px;"></p><p>= 7850*(0.6096^2-(0.6096-2*0.019)^2)*9.8/30 = 3.4530e+03 N/m</p><p><img src="Flexible_Beam_LP_Modes_eq11904963258706611165.png" alt="$L$" style="width:10px;height:10px;"> = Length of the beam</p><p><img src="Flexible_Beam_LP_Modes_eq12521845750295486340.png" alt="$E$" style="width:12px;height:10px;"> = Modulus of elasticity</p><p><img src="Flexible_Beam_LP_Modes_eq17419315245227113761.png" alt="$I$" style="width:8px;height:10px;"> = Area moment of inertia of cross section</p><p>The area moment of inertia for a hollow square cross section is:</p><p><img src="Flexible_Beam_LP_Modes_eq12554969147507836549.png" alt="$I = {(x_{outer}^4-x_{inner}^4) / 12}\quad\quad\quad(2)$" style="width:208px;height:17px;"></p><p>(0.6096^4-(0.6096-2*0.019)^4)/12 = 0.002612 m^4</p><p>Plugging these values into equation (1) yields 3452*30^4/(8*2e11*0.002612) = 0.6691 m</p><p>Transient simulation results match theory quite well, especially as the number of elements increases.</p><img vspace="5" hspace="5" src="Flexible_Beam_LP_Modes_04.png" style="width:560px;height:420px;" alt=""> <h2 id="4">Mode Calculation</h2><p>It is possible to calculate the natural frequencies of the modes and to plot the mode shapes using linearization.  The natural frequencies can be predicted using the theoretical equation:</p><p><img src="Flexible_Beam_LP_Modes_eq10172833870166443058.png" alt="$\omega_{n} = A(EI / qL^4)^{1 / 2}$" style="width:123px;height:18px;"></p><p>Where A is a set of coefficients that depend on beam boundary conditions. For the boundary conditions in this model (fixed, free) A = [3.52 22.0 61.7 121.0].  This yields theoretical natural frequencies for the first four modes of 0.7576, 4.7348, 13.2790, and 26.0414 Hz.  The results from linearizing our beam model match theory quite closely.</p><img vspace="5" hspace="5" src="Flexible_Beam_LP_Modes_05.png" style="width:560px;height:420px;" alt=""> <p class="footer">Copyright 2014-2017 The MathWorks, Inc.<br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2017a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Lumped Parameter Beam with Mode Calculation
+% 
+% This example shows a cantilever beam modeled using the lumped parameter
+% method.  In a simple test, transient simulation can be used to determine
+% the static deflection of the beam.  
+% 
+% The model is configured so that linearization techniques can be used to
+% identify the natural frequencies of the beams at various modes.
+%
+% Copyright 2014-2017 The MathWorks, Inc.
+
+
+%% Model
+
+open_system('Flexible_Beam_LP_Modes')
+
+set_param(find_system('Flexible_Beam_LP_Modes','FindAll', 'on','type','annotation','Tag','ModelFeatures'),'Interpreter','off')
+
+%% Flex_Body Subsystem (Lumped Parameter Method)
+%
+% The chain of flexible elements is automatically constructed using MATLAB
+% commands.  The subsystem mask permits the user to specify the number of
+% elements, material properties, and beam cross section.  The degrees of
+% freedom for the flexible body can also be selected in the mask.  The body
+% "Flex Joint" within the element can be replaced by another Simscape
+% Multibody block that has the desired degrees of freedom.
+
+open_system('Flexible_Beam_LP_Modes/Flex_Body','force')
+open_system('Flexible_Beam_LP_Modes/Flex_Body/Flex_Elem_1','force')
+
+
+%% Static Deflection
+%
+% In this model, the default values are for a 30m long hollow square beam
+% constructed of steel (modulus of elasticity = 200 GPa, density = 7850
+% kg/m^3). The sides of the beam are 0.6096m long, and the wall thickness
+% is 0.019m.
+%
+% Euler-Bernoulli beam theory predicts the static deflection for a
+% cantilever beam with one fixed end and one free end with equation (1)
+% 
+% $\delta={qL^4\over 8EI}\quad\quad\quad(1)$  
+% 
+% Where
+%
+% $q$ = Uniform load on the beam (force/unit length) 
+% 
+% $q  = rho*area / length$ 
+% 
+% = 7850*(0.6096^2-(0.6096-2*0.019)^2)*9.8/30 = 3.4530e+03 N/m
+%
+% $L$ = Length of the beam
+%
+% $E$ = Modulus of elasticity
+%
+% $I$ = Area moment of inertia of cross section
+%
+% The area moment of inertia for a hollow square cross section is: 
+%
+% $I = {(x_{outer}^4-x_{inner}^4) / 12}\quad\quad\quad(2)$
+%
+% (0.6096^4-(0.6096-2*0.019)^4)/12 = 0.002612 m^4
+%
+% Plugging these values into equation (1) yields
+% 3452*30^4/(8*2e11*0.002612) = 0.6691 m
+%
+% Transient simulation results match theory quite well, especially as the
+% number of elements increases.
+
+flexBeam_lpar_plot1staticdefnumelem
+
+%% Mode Calculation
+%
+% It is possible to calculate the natural frequencies of the modes and to
+% plot the mode shapes using linearization.  The natural frequencies can be
+% predicted using the theoretical equation:
+%
+% $\omega_{n} = A(EI / qL^4)^{1 / 2}$
+%
+% Where A is a set of coefficients that depend on beam boundary conditions.
+% For the boundary conditions in this model (fixed, free) A = [3.52 22.0
+% 61.7 121.0].  This yields theoretical natural frequencies for the first
+% four modes of 0.7576, 4.7348, 13.2790, and 26.0414 Hz.  The results from
+% linearizing our beam model match theory quite closely.
+
+flexBeam_calculate_modes
+
+%%
+
+%clear all
+close all
+bdclose all
+
+##### SOURCE END #####
+--></body></html>

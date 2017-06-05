@@ -1,0 +1,33 @@
+function flexBeam_lpar_configure_flextype(b_h,flextype,srcLib)
+rtf_bDOF_h = find_system(b_h,'LookUnderMasks','on','Name','Transform Bending DOF');
+rtf_haBF_h = find_system(b_h,'LookUnderMasks','on','Name','Transform HalfBeamF');
+
+if(flextype==1)
+    % 1-Axis Bending
+    replace_block(b_h,'LookUnderMasks','on','Name','Flex Joint',[srcLib '/Revolute Joint'],'noprompt')
+    for i=1:length(rtf_bDOF_h)
+        set_param(rtf_bDOF_h{i},...
+            'RotationMethod','StandardAxis',...
+            'RotationStandardAxis','+Y',...
+            'RotationAngle','90',...
+            'RotationAngleUnits','deg');
+    end
+    for i=1:length(rtf_haBF_h)
+        set_param(rtf_haBF_h{i},...
+            'RotationMethod','StandardAxis',...
+            'RotationStandardAxis','+Y',...
+            'RotationAngle','90',...
+            'RotationAngleUnits','deg');
+    end
+elseif(flextype==2)
+    % 3-Axis Bending, Elongation
+    replace_block(b_h,'LookUnderMasks','on','Name','Flex Joint',[srcLib '/Bearing Joint'],'noprompt')
+    for i=1:length(rtf_bDOF_h)
+        set_param(rtf_bDOF_h{i},...
+            'RotationMethod','None');
+    end
+    for i=1:length(rtf_haBF_h)
+        set_param(rtf_haBF_h{i},...
+            'RotationMethod','None');
+    end
+end

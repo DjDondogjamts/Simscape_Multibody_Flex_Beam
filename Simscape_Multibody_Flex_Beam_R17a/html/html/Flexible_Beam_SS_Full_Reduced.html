@@ -1,0 +1,140 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Cantilever Deflection With Reduced Order Model</title><meta name="generator" content="MATLAB 9.2"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-02-23"><meta name="DC.source" content="Flexible_Beam_SS_Full_Reduced.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Cantilever Deflection With Reduced Order Model</h1><!--introduction--><p>This example shows a cantilever beam modeled using the state-space method. The beam can be loaded with a weight rigidly attached to the end or with a pendulum link.</p><p>Two state-space models can be used.  One has all states that were present in the original model from which the state-space matrices were derived. The second is a reduced order model which has far fewer states.  Under certain loading conditions, the reduced order model runs far faster than the original model with all the states.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Model</a></li><li><a href="#2">State-Space Model Subsystem</a></li><li><a href="#3">Deflection Joint Subsystem</a></li><li><a href="#4">Model Comparison: Beam Loaded with Rigidly Attached Weight</a></li><li><a href="#5">Model Comparison: Beam Loaded with Pendulum</a></li></ul></div><h2 id="1">Model</h2><img vspace="5" hspace="5" src="Flexible_Beam_SS_Full_Reduced_01.png" style="width:518px;height:262px;" alt=""> <h2 id="2">State-Space Model Subsystem</h2><p>The state-space model takes forces as inputs and calculates the deflection of the cantilever beam.  It takes two inputs - the first is the distributed load due to gravity, and the second is the force exerted on the tip of the beam due to the load.</p><img vspace="5" hspace="5" src="Flexible_Beam_SS_Full_Reduced_02.png" style="width:458px;height:190px;" alt=""> <h2 id="3">Deflection Joint Subsystem</h2><p>This subsystem contains a joint driven by a prescribed motion.  The prescribed motion is the deflection calculated by the state-space model of the beam deflection.  The joint acts to superimpose the deflection of the beam on the motion of the body to which it is attached.</p><img vspace="5" hspace="5" src="Flexible_Beam_SS_Full_Reduced_03.png" style="width:380px;height:102px;" alt=""> <h2 id="4">Model Comparison: Beam Loaded with Rigidly Attached Weight</h2><p>The plot below shows the comparison of the full state-space model and the reduced order model when the beam is loaded with a rigidly attached weight. The results are nearly identical, and the reduced order model runs noticeably faster.</p><img vspace="5" hspace="5" src="Flexible_Beam_SS_Full_Reduced_04.png" style="width:560px;height:420px;" alt=""> <h2 id="5">Model Comparison: Beam Loaded with Pendulum</h2><p>The plot below shows the comparison of the full state-space model and the reduced order model when the beam is loaded with a pendulum link. The results are nearly identical, and the reduced order model runs significantly faster.</p><img vspace="5" hspace="5" src="Flexible_Beam_SS_Full_Reduced_05.png" style="width:560px;height:420px;" alt=""> <p class="footer">Copyright 2014-2017 The MathWorks, Inc.<br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2017a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Cantilever Deflection With Reduced Order Model
+% 
+% This example shows a cantilever beam modeled using the state-space
+% method. The beam can be loaded with a weight rigidly attached to the end
+% or with a pendulum link.
+% 
+% Two state-space models can be used.  One has all states that were present
+% in the original model from which the state-space matrices were derived.
+% The second is a reduced order model which has far fewer states.  Under
+% certain loading conditions, the reduced order model runs far faster than
+% the original model with all the states.
+%
+% Copyright 2014-2017 The MathWorks, Inc.
+
+
+%% Model
+
+open_system('Flexible_Beam_SS_Full_Reduced')
+
+set_param(find_system('Flexible_Beam_SS_Full_Reduced','FindAll', 'on','type','annotation','Tag','ModelFeatures'),'Interpreter','off')
+
+%% State-Space Model Subsystem 
+%
+% The state-space model takes forces as inputs and calculates the
+% deflection of the cantilever beam.  It takes two inputs - the first is
+% the distributed load due to gravity, and the second is the force exerted
+% on the tip of the beam due to the load.
+
+open_system('Flexible_Beam_SS_Full_Reduced/State-Space Model','force')
+
+%% Deflection Joint Subsystem 
+%
+% This subsystem contains a joint driven by a prescribed motion.  The
+% prescribed motion is the deflection calculated by the state-space model
+% of the beam deflection.  The joint acts to superimpose the deflection of
+% the beam on the motion of the body to which it is attached.
+
+open_system('Flexible_Beam_SS_Full_Reduced/Deflection Joint','force')
+
+
+%% Model Comparison: Beam Loaded with Rigidly Attached Weight
+%
+% The plot below shows the comparison of the full state-space model and the
+% reduced order model when the beam is loaded with a rigidly attached
+% weight. The results are nearly identical, and the reduced order model
+% runs noticeably faster.
+
+flexBeam_compare_config_load('Flexible_Beam_SS_Full_Reduced','Bob');
+flexBeam_statespace_compare_full_reduced
+
+%% Model Comparison: Beam Loaded with Pendulum
+%
+% The plot below shows the comparison of the full state-space model and the
+% reduced order model when the beam is loaded with a pendulum link. The
+% results are nearly identical, and the reduced order model runs
+% significantly faster.
+
+flexBeam_compare_config_load('Flexible_Beam_SS_Full_Reduced','Link');
+flexBeam_statespace_compare_full_reduced
+
+
+
+%%
+
+%clear all
+close all
+bdclose all
+
+##### SOURCE END #####
+--></body></html>
